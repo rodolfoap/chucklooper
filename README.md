@@ -1,7 +1,7 @@
 # ChuckLooper
 The basic functions of the Boss RC-50 LoopStation... with chuck and a Midi Controller (examples with AKAI LPD8)
 
-This is an attempt to emulate the basic functions of the boss RC-50 LoopStation.
+This is an attempt to emulate the basic functions of the boss RC-50 LoopStation. For now, only playing. Recording to be implemented.
 
 ![Boss RC-50 LoopStation](https://github.com/rodolfoap/chucklooper/blob/master/img/rc_50_top_gal.jpg "Boss RC-50 LoopStation")
 
