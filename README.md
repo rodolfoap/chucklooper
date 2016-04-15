@@ -18,4 +18,8 @@ Here's a script to run it on Linux. I suppose a similar one should do for window
 	#!/bin/bash
 	chuck.pulse rc50.chuck
 
+On the example you have a pseudo-Blue Bossa in 7/8. for now, you can copy the executables on other directories and replace your samples. 
+
+More functionalities to be added later.
+
 Enjoy!
