@@ -1,0 +1,49 @@
+MidiIn midi; MidiMsg msg; if(!midi.open(1)) me.exit();
+<<< "Found MIDI device", midi.num(), "/", midi.name() >>>;
+<<<"\n\n\t\tx\tx\tx\tSTOP\tx\tx\tx\tx\n\t\tLoop1\tLoop2\tLoop3\tx\tVol1\tVol2\tVol3\tx\t\n\n">>>;
+
+Gain gain[4];
+SndBuf sample[4];
+0 => int active =>int newLoop=> int busy;
+
+fun void loopInitialize(int loop, string lFile){
+	<<< "LoopInitialize", loop, lFile >>>;
+	lFile			=> sample[loop].read;
+	1 			=> sample[loop].loop; 
+	sample[loop].samples() 	=> sample[loop].pos;
+	sample[loop]		=> gain[loop] 	=> dac;
+	0.			=> gain[loop].gain;
+}
+loopInitialize(1, "sample1.wav");
+loopInitialize(2, "sample2.wav");
+loopInitialize(3, "sample3.wav");
+0 => sample[3].loop;
+
+function void chLoop(int nextLoop){
+	nextLoop=>newLoop;
+	if(busy==0 || newLoop==9){ 1 => busy;
+		<<< "A-[ ", active, " ] < ", newLoop >>>;
+		if(newLoop==9) { 0 =>active=>newLoop; }
+		if(active>0) (1.0 - sample[active].pos()$float / sample[active].samples()$float) * sample[active].length() => now;
+		newLoop => active;
+		0 => sample[1].pos => sample[2].pos =>sample[3].pos;
+		0 => gain[1].gain => gain[2].gain => gain[3].gain;
+		1 => gain[newLoop].gain;
+		0 => busy;
+		<<< "B-[ ", active, " ] < " >>>;
+	} else	<<< "C-[ ", active, " ] <*", newLoop >>>;
+}
+
+while(true){
+	midi => now;
+    	while(midi.recv(msg)){
+		if(msg.data1==154){ 
+			if(msg.data2==69) { spork ~chLoop(1); } // PAD1 = Change to loop 1
+			if(msg.data2==71) { spork ~chLoop(2); } // PAD2 = Change to loop 2
+			if(msg.data2==72) { spork ~chLoop(3); } // PAD3 = Change to loop 3
+			if(msg.data2==76) { spork ~chLoop(0); } // PAD5 = End after loop
+			if(msg.data2==81) { spork ~chLoop(9); } // PAD8 = End NOW
+			<<<"Message: ", msg.data1, msg.data2 >>>;
+		}
+	}
+}
